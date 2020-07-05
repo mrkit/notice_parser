@@ -2,7 +2,8 @@ const express = require('express'),
       server = express(),
       morgan = require('morgan'),
       { resolve } = require('path'),
-      { json, urlencoded } = require('body-parser');
+      { json, urlencoded } = require('body-parser'),
+      db = require('./db');
 
 server.use([
   express.static(resolve(__dirname, '..', 'dist')),
@@ -22,4 +23,5 @@ server.use((err, req, res, next) => {
   }
 });
 
-server.listen(3000, console.log('listening on 3000'));
+db.conn.sync({force: true})
+.then(() => server.listen(3000, console.log('listening on 3000')));

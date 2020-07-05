@@ -1,5 +1,5 @@
-function transformNJ(data){
-  return data
+function transformNJ(data, terms){
+  output = data
   .replace(/Publication Name:[\s\S]*?Notice Publish Date:/g, '<br>')
   .replace(/Back\s*Firefox.*\s.*\s.*\s.*\n-*Page.*-*/g, '<br><hr>')
   .replace(/Firefox.*aspx/g, '')
@@ -26,6 +26,12 @@ function transformNJ(data){
   .replace(/Daily Journal, Vineland/, '<h1>$&</h1>')
   .replace(/Jersey Journal, Jersey City/, '<h1>$&</h1>')
   .replace(/South Jersey Times/, '<h1>$&</h1>')
+
+  terms.forEach(term => {
+    output = output.replace(new RegExp(term.string, term.flag), term.markup);
+  });
+
+  return output;
 }
 
 //parser for http://pa.mypublicnotices.com/PublicNotice.asp

@@ -1,9 +1,24 @@
 const router = require('express').Router(),
       fs = require('fs'),
       { resolve } = require('path'),
-      PDFParser = require("pdf2json");
+      PDFParser = require("pdf2json"),
+      { Terms } = require('../db').models;
 
 const { transformNJ, transformPA, publicnoticepaParser } = require('../parserFunctions/parserFunctions');
+
+router.get('/terms', (req, res, next) => {
+  Terms.findAll()
+  .then(terms => res.send(terms))
+  .catch(next);
+});
+
+router.post('/terms', (req, res, next) => {
+  const { term } = req.body;
+  console.log('caught the term', term);
+  Terms.create({ term })
+  .then(term => res.send(term))
+  .catch(next);
+})
 
 router.post('/', (req, res, next) => {
   const { pdfFileName, writeText, writeHTML } = req.body;

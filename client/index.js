@@ -5,6 +5,7 @@ const njForm = document.getElementById('njForm');
 const pdfInput = document.getElementById("pdfInput");
 const statusMessage = document.getElementById('message');
 const preview = document.getElementById('preview');
+const termsForm = document.getElementById('terms');
 
 pdfInput.addEventListener('change', e => {
   console.log(pdfInput.files);
@@ -47,4 +48,26 @@ njForm.addEventListener('submit', e => {
     }
   })
   .catch(err => console.error(`Axios post error = ${err.message}`));
-})
+});
+
+termsForm.addEventListener('submit', e => {
+  e.preventDefault();
+
+  const term = e.target.term.value;
+  console.log("What is the term", term);
+  axios.post('/api/terms', { term })
+  .then(res => res.data)
+  .then(term => {
+    console.log("This is the term that came back", term);
+  })
+  .catch(err => console.error(`Axios POST terms error = ${err.message}`));
+});
+
+window.onload = function(){
+  axios.get('/api/terms')
+  .then(res => res.data)
+  .then(terms => {
+    console.log("these are the terms", terms);
+  })
+  .catch(err => console.error(`Axios GET terms error = ${err.message}`))
+}
