@@ -39,7 +39,7 @@ function handleParserForm(e){
   const writeHTML = e.target.writeHTML.checked;
   const openGDrive = e.target.openGDrive.checked;
 
-  axios.post('/api/', { pdfFileName, writeText, writeHTML })
+  axios.post('/api/parser', { pdfFileName, writeText, writeHTML })
   .then(res => res.data)
   .then(pdf => {
     if(statusMessage.childNodes.length){
@@ -105,12 +105,12 @@ function handleTogglePreferences(e){
   }
 }
 
-/* ---- CRUD Funcs ---- */
+/* ---- CRUD Functions ---- */
 
 function handleAddTerm(term){
   const li = document.createElement('li');
   li.className = 'termsList-term';
-  li.innerHTML = `<span class="t-string">${term.string}</span><span class="t-flags">${term.flags}</span><span class="t-markup">${term.markup}</span>`;
+  // li.innerHTML = `<span class="t-string">${term.string}</span><span class="t-flags">${term.flags}</span><span class="t-markup">${term.markup}</span>`;
   const updateForm = document.createElement('form');
   const deleteForm = document.createElement('form');
 

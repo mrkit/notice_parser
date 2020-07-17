@@ -2,7 +2,10 @@ const conn = require('./conn'),
       Sequelize = conn.Sequelize;
 
 const Terms = conn.define('Terms', {
-  string: Sequelize.TEXT,
+  string: {
+    type: Sequelize.TEXT,
+    // allowNull: false //turn on for production
+  },
   flags:  {
     type: Sequelize.STRING,
     defaultValue: ''

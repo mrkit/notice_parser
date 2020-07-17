@@ -26,10 +26,23 @@ header {
       margin: 0;
     }
 
-    form  {
+    .parserForm  {
       display: grid;
       grid-template-rows: repeat(auto-fill, 1.5rem);
       margin-left: .5rem;
+      
+      label {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        // min-width: fit-content(100%);
+        width: 60%;
+        min-width: 20rem;
+
+        input {
+          height: inherit;
+          max-height: 1rem;
+        }
+      }
 
       input[type=submit] {
         width: 10rem;
@@ -88,7 +101,6 @@ header {
 aside {
   user-select: none;
   width: 98.75vw;
-  height: 15rem;
   background: thistle;
   margin-top: -1rem;
   border-right: 1px solid black;

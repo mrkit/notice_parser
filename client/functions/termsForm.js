@@ -62,21 +62,7 @@ function createTermsForm(submitType){
   termsForm.append(termInputDiv, addMarkupLabel, submitForm);
   document.querySelector('.right').prepend(termsForm);
   
-  return termsForm;
+  return termsForm; //not necessary?
 }
 
 module.exports = createTermsForm;
-
-/*
-<form id="termsForm" class="termsForm">
-  <div class="termsForm-line-flags">
-    <label>Add Term /<input tabindex="1" type="text" name="term" placeholder="Add new word to highlight" autocomplete="off">/</label>
-    <input tabindex="3" type="checkbox" name="flags" value='g'>g
-    <input tabindex="4" type="checkbox" name="flags" value='i'>i
-    <input tabindex="5" type="checkbox" name="flags" value='m'>m
-  </div>
-  <label>Markup  
-    <input tabindex="2" type="text" placeholder="Markup" name="markup" autocomplete="off"></label>
-  <input type="submit" value="Submit">
-</form>
-*/

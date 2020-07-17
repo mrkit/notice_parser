@@ -146,3 +146,11 @@ module.exports = {
   transformPA,
   publicnoticepaParser
 }
+
+/*
+todo: 
+generalize the one parser
+remove the other two
+remove all the hardcoded replace methods - store the relevant values in a seed file instead. The same goes for the replace methods in the to-be-removed forms
+change exports object to just the parser. Fix the import error that'll occur because of this in the index.js file in the api folder
+*/
