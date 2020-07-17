@@ -13,12 +13,12 @@ router.get('/terms', (req, res, next) => {
 });
 
 router.post('/terms', (req, res, next) => {
-  const { term } = req.body;
-  console.log('caught the term', term);
-  Terms.create({ term })
+  const { string, flags, markup } = req.body;
+  
+  Terms.create({ string, flags, markup })
   .then(term => res.send(term))
   .catch(next);
-})
+});
 
 router.post('/', (req, res, next) => {
   const { pdfFileName, writeText, writeHTML } = req.body;
@@ -30,7 +30,13 @@ router.post('/', (req, res, next) => {
     
     if(pdfFileName[0] == "N"){
       saveParsedtoPDF(writeHTML, transformNJ);
-      res.send({ message: "NJ Parser", data: transformNJ(data) });
+
+      //Running the Sequelize Promise forces me to output from a promise. There might be issues with saveParsedtoPDF parcer parameter if it requires a promise reponse also
+      transformNJ(data)
+      .then(data => {
+        res.send({ message: "NJ Parser", data })
+      })
+      .catch(err => console.error(`Frontend Transform NJ Error ${err.message}`));
     } else if (pdfFileName[0] == "P"){
       console.log("Using publicnoticepaParser, make sure you're using publicnoticepaParser.com");
       saveParsedtoPDF(writeHTML, publicnoticepaParser);

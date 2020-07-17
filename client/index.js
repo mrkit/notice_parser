@@ -1,22 +1,41 @@
 import axios from 'axios';
 import './stylesheets/main.scss';
+import createTermsForm from './functions/termsForm';
 
-const njForm = document.getElementById('njForm');
 const pdfInput = document.getElementById("pdfInput");
 const statusMessage = document.getElementById('message');
 const preview = document.getElementById('preview');
-const termsForm = document.getElementById('terms');
+const termsList = document.getElementById('termsList');
 
-pdfInput.addEventListener('change', e => {
+const preferencesBtn = document.getElementById('preferencesBtn');
+const preferences = document.getElementById('preferences');
+
+window.onload = init;
+const termsForm = createTermsForm('Submit');
+pdfInput.addEventListener('change', handleBrowseFiles);
+parserForm.addEventListener('submit', handleParserForm);
+termsForm.addEventListener('submit', handleTermsForm);
+preferencesBtn.addEventListener('click', handleTogglePreferences);
+
+/* ---- Functions ---- */
+function init(){
+  axios.get('/api/terms')
+  .then(res => res.data)
+  .then(terms => {
+    terms.forEach(term => handleAddTerm(term))
+  })
+  .catch(err => console.error(`Axios GET terms error = ${err.message}`))
+}
+
+function handleBrowseFiles(e){
   console.log(pdfInput.files);
-});
+}
 
-njForm.addEventListener('submit', e => {
+function handleParserForm(e){
   e.preventDefault();
 
-  console.log('pdf File Name =', pdfInput.files[0].name);
   const pdfFileName = pdfInput.files[0].name;
-  const writeText = e.target.writeText.checked; //use .checked instead of .value
+  const writeText = e.target.writeText.checked;
   const writeHTML = e.target.writeHTML.checked;
   const openGDrive = e.target.openGDrive.checked;
 
@@ -39,8 +58,11 @@ njForm.addEventListener('submit', e => {
 
     window.getSelection().addRange(selection);
     
-    /* --- How to copy the above selection to the clipboard ---*/
+    /* --- How to copy the above selection to the clipboard - should this have a flag to make it optional?---*/
     document.execCommand('copy');
+
+    /* --- Remove selection after copying --- */
+    window.getSelection().removeAllRanges();
 
     /* --- Open Public Notice Site --- */
     if(openGDrive){
@@ -48,26 +70,75 @@ njForm.addEventListener('submit', e => {
     }
   })
   .catch(err => console.error(`Axios post error = ${err.message}`));
-});
-
-termsForm.addEventListener('submit', e => {
-  e.preventDefault();
-
-  const term = e.target.term.value;
-  console.log("What is the term", term);
-  axios.post('/api/terms', { term })
-  .then(res => res.data)
-  .then(term => {
-    console.log("This is the term that came back", term);
-  })
-  .catch(err => console.error(`Axios POST terms error = ${err.message}`));
-});
-
-window.onload = function(){
-  axios.get('/api/terms')
-  .then(res => res.data)
-  .then(terms => {
-    console.log("these are the terms", terms);
-  })
-  .catch(err => console.error(`Axios GET terms error = ${err.message}`))
 }
+
+function handleTermsForm (e){
+  e.preventDefault();
+  const string = e.target.term.value;
+  const flags = stringifyFlags();
+  const markup = e.target.markup.value;
+
+  axios.post('/api/terms', { string, flags, markup })
+  .then(res => res.data)
+  .then(term => handleAddTerm(term))
+  .catch(err => console.error(`Axios POST terms error = ${err.message}`));
+
+  e.target.term.value = '';
+  e.target.markup.value = '';
+}
+
+function stringifyFlags(){
+  let output = '';
+  document.querySelectorAll('input:checked').forEach(flag => {
+    if(flag.value !== 'on'){ //checked always returns on as first value. I don't want that in db
+      output += flag.value;
+    }
+  });
+  return output;
+}
+
+function handleTogglePreferences(e){
+  if(window.getComputedStyle(preferences, null).getPropertyValue("display") == "none"){
+    preferences.style.display = "block";
+  } else {
+    preferences.style.display = "none";
+  }
+}
+
+/* ---- CRUD Funcs ---- */
+
+function handleAddTerm(term){
+  const li = document.createElement('li');
+  li.className = 'termsList-term';
+  li.innerHTML = `<span class="t-string">${term.string}</span><span class="t-flags">${term.flags}</span><span class="t-markup">${term.markup}</span>`;
+  const updateForm = document.createElement('form');
+  const deleteForm = document.createElement('form');
+
+  const updateInput = `<input type="submit" value="Edit"><input type="hidden" name="updateTerm" value=${JSON.stringify(term)}>`;
+  const deleteInput = `<input type="submit" value="Delete"><input type="hidden" name="deleteTerm" value=${JSON.stringify(term)}>`;
+
+  updateForm.innerHTML = updateInput;
+  deleteForm.innerHTML = deleteInput;
+
+  updateForm.addEventListener('submit', handleUpdateTerm);
+  deleteForm.addEventListener('submit', handleDeleteTerm);
+
+  li.appendChild(updateForm);
+  li.appendChild(deleteForm);
+  termsList.appendChild(li);
+}
+
+function handleUpdateTerm(e){
+  e.preventDefault();
+  const term = JSON.parse(e.target.updateTerm.value);
+}
+
+function handleDeleteTerm(e){
+  e.preventDefault();
+  const term = JSON.parse(e.target.delteTerm.value);
+  //termsForm refill
+
+}
+
+
+

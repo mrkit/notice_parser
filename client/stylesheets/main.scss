@@ -13,7 +13,6 @@ body {
 
 header {
   user-select: none;
-  margin-bottom: 1rem;
   padding-bottom: 1rem;;
   border-bottom: 1px solid black;
   display: grid;
@@ -43,6 +42,18 @@ header {
     grid-template-rows: repeat(auto-fill, 1fr);
     align-items: center;
 
+    .termsForm {
+      border: 1px solid black;
+      padding: .5rem;
+      display: grid;
+      grid-template-rows: repeat(auto-fill, 1fr);
+      width: 22rem;
+
+      .termsForm-line-flags {
+        display: flex;
+      }
+    }
+
     .status-message-display {
       display: flex;
       width: 20rem;
@@ -64,6 +75,50 @@ header {
             color: black;
           }
         }
+      }
+    }
+
+    .preferencesBtn {
+
+    }
+  }
+}
+
+//preferences
+aside {
+  user-select: none;
+  width: 98.75vw;
+  height: 15rem;
+  background: thistle;
+  margin-top: -1rem;
+  border-right: 1px solid black;
+  border-bottom: 1px solid black;
+  border-left: 1px solid black;
+  box-shadow: 3px 3px 4px grey;
+  display: none;
+
+  .termsList {
+    padding: 0;
+    list-style: none;
+
+    .termsList-term:first-child {
+      font-weight: bold;
+    }
+
+    .termsList-term {
+      display: grid;
+      grid-template-columns: repeat(5, 1fr);
+      justify-content: space-between;
+      width: 40vw;
+      justify-items: center;
+
+      .t-string {
+      }
+
+      .t-flags {
+      }
+
+      .t-markup {
       }
     }
   }

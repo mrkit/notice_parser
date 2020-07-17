@@ -9,7 +9,7 @@
   <header>
     <div class="left">
       <h1>Notice Parser</h1>
-      <form id="njForm">
+      <form id="parserForm">
         <label>Create Text Doc<input type="checkbox" name="writeText"></label>
         <label>Create HTML Doc<input type="checkbox" name="writeHTML"></label>
         <label>Open Google Drive after Preview<input type="checkbox" name="openGDrive" checked></label>
@@ -18,19 +18,29 @@
       </form>
     </div>
     <div class="right">
-      <form id="terms">
-        <input type="text" name="term" placeholder="Add new word to highlight">
+      <!-- <form id="termsForm" class="termsForm">
+        <div class="termsForm-line-flags">
+          <label>Add Term /<input tabindex="1" type="text" name="term" placeholder="Add new word to highlight" autocomplete="off">/</label>
+          <input tabindex="3" type="checkbox" name="flags" value='g'>g<input tabindex="4" type="checkbox" name="flags" value='i'>i<input tabindex="5" type="checkbox" name="flags" value='m'>m
+        </div>
+        <label>Markup  <input tabindex="2" type="text" placeholder="Markup" name="markup" autocomplete="off"></label>
         <input type="submit" value="Submit">
-      </form>
+      </form> -->
       <div class="status-message-display">Parser Type: <div id="message" class="message"></div></div>
       <nav>
         <ul>
           <li><a href="https://www.njpublicnotices.com/authenticate.aspx" target="_blank">NJ Public Notices</a></li>
           <li><a href="https://drive.google.com/drive/folders/1etb1RAUp5Fezu7Hl-ckvHh85dda3afAC?usp=sharing" target="_blank">GDrive Public Notice Folder</a></li>
+          <li><button id="preferencesBtn" class="preferencesBtn">Preferences</button></li>
         </ul>
       </nav>
     </div>
   </header>
+  <aside id="preferences">
+    <ul id="termsList" class="termsList">
+      <li class='termsList-term'><span class="t-string-header">String</span><span class="t-flags-header">Flags</span><span class="t-markup-header">Markup</span></li>
+    </ul>
+  </aside>
 
   <div id="preview"></div>
 </body>
