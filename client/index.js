@@ -1,6 +1,6 @@
 import axios from 'axios';
 import './stylesheets/main.scss';
-import createTermsForm from './functions/termsForm';
+import createTermsForm from './components/termsForm';
 
 const pdfInput = document.getElementById("pdfInput");
 const statusMessage = document.getElementById('message');
@@ -78,6 +78,10 @@ function handleTermsForm (e){
   const flags = stringifyFlags();
   const markup = e.target.markup.value;
 
+  if(!markup){
+    console.log('Made it in the markup')
+  }
+
   axios.post('/api/terms', { string, flags, markup })
   .then(res => res.data)
   .then(term => handleAddTerm(term))
@@ -110,21 +114,56 @@ function handleTogglePreferences(e){
 function handleAddTerm(term){
   const li = document.createElement('li');
   li.className = 'termsList-term';
-  // li.innerHTML = `<span class="t-string">${term.string}</span><span class="t-flags">${term.flags}</span><span class="t-markup">${term.markup}</span>`;
+
+  // li.innerHTML = `<span class="t-string">${term.string.substring(0,30)}...</span><span class="t-flags">${term.flags}</span><span class="t-markup"></span>`;
+
+  const tStringSpan = document.createElement('span');
+  tStringSpan.className = 't-string'
+  tStringSpan.textContent = term.string.substring(0,30);
+
+  const tFlagsSpan = document.createElement('span');
+  tFlagsSpan.className = 't-flags'
+  tFlagsSpan.textContent = term.flags;
+
+  const tMarkupSpan = document.createElement('span');
+  tMarkupSpan.className = 't-markup'
+  tMarkupSpan.textContent = term.markup;
+
+  li.append(tStringSpan, tFlagsSpan, tMarkupSpan);
+  
   const updateForm = document.createElement('form');
   const deleteForm = document.createElement('form');
 
-  const updateInput = `<input type="submit" value="Edit"><input type="hidden" name="updateTerm" value=${JSON.stringify(term)}>`;
-  const deleteInput = `<input type="submit" value="Delete"><input type="hidden" name="deleteTerm" value=${JSON.stringify(term)}>`;
+  /* --- Update Inputs --- */
+  const updateInput = document.createElement('input');
+  updateInput.setAttribute('type', 'submit');
+  updateInput.setAttribute('value', 'Edit');
+  
+  const updateInputData = document.createElement('input');
+  updateInputData.setAttribute('type', 'hidden');
+  updateInputData.setAttribute('name', 'updateTerm');
+  updateInputData.setAttribute('value', JSON.stringify(term));
 
-  updateForm.innerHTML = updateInput;
-  deleteForm.innerHTML = deleteInput;
+  /* --- Delete Inputs --- */
+  const deleteInput = document.createElement('input');
+  deleteInput.setAttribute('type', 'submit');
+  deleteInput.setAttribute('value', 'Delete');
+  
+  const deleteInputData = document.createElement('input');
+  deleteInputData.setAttribute('type', 'hidden');
+  deleteInputData.setAttribute('name', 'deleteTerm');
+  deleteInputData.setAttribute('value', JSON.stringify(term));
+
+  updateForm.append(updateInput, updateInputData);
+  deleteForm.append(deleteInput, deleteInputData);
 
   updateForm.addEventListener('submit', handleUpdateTerm);
   deleteForm.addEventListener('submit', handleDeleteTerm);
 
   li.appendChild(updateForm);
   li.appendChild(deleteForm);
+
+  //Attach to preferences unordered list
   termsList.appendChild(li);
 }
 

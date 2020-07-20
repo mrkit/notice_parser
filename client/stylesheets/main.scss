@@ -61,9 +61,35 @@ header {
       display: grid;
       grid-template-rows: repeat(auto-fill, 1fr);
       width: 22rem;
-
+      // height: 18vh;
+      
       .termsForm-line-flags {
         display: flex;
+      }
+
+      .quick-select {
+        display: flex;
+        align-items: center;
+        line-height: 1.5rem;
+        justify-content: space-evenly;
+
+        input[type='checkbox']{
+          width: 1rem;
+          height: 1rem;
+        }
+
+        input[type='color']{
+          border: none;
+          padding: 0;
+          width: 1rem;
+          height: 1rem;
+          margin-right: .3rem;
+        }
+      }
+
+      .markup-input {
+        border-top: 1px solid black;
+        padding-top: .3rem;
       }
     }
 
@@ -112,19 +138,23 @@ aside {
   .termsList {
     padding: 0;
     list-style: none;
-
+    
     .termsList-term:first-child {
       font-weight: bold;
     }
 
     .termsList-term {
       display: grid;
-      grid-template-columns: repeat(5, 1fr);
+      grid-template-columns: 35vw 10vw 35vw 10vw 10vw;
       justify-content: space-between;
-      width: 40vw;
+      width: 100%;
       justify-items: center;
+      align-items: center;
+      border-bottom: 1px solid grey;
+      height: 2rem;
 
       .t-string {
+        width: 32vw;
       }
 
       .t-flags {
@@ -133,7 +163,7 @@ aside {
       .t-markup {
       }
     }
+
+    
   }
 }
-
-

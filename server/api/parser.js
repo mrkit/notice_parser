@@ -3,7 +3,7 @@ const router = require('express').Router(),
       { resolve } = require('path'),
       PDFParser = require("pdf2json");
 
-const { transformNJ, transformPA, publicnoticepaParser } = require('../parserFunctions/parserFunctions');
+const parser = require('../helperFuncs/parser');
 
 router.post('/', (req, res, next) => {
   const { pdfFileName, writeText, writeHTML } = req.body;
@@ -15,10 +15,10 @@ router.post('/', (req, res, next) => {
     
     //todo: remove this conditional, there will only be one parser. Maybe have the parser take in a value to designate different groupings (ie one for nj, one for pa, etc, based off of what grouping the terms are in)
     if(pdfFileName[0] == "N"){
-      saveParsedtoPDF(writeHTML, transformNJ);
+      saveParsedtoPDF(writeHTML, parser);
 
       //Running the Sequelize Promise forces me to output from a promise. There might be issues with saveParsedtoPDF parcer parameter if it requires a promise reponse also
-      transformNJ(data)
+      parser(data)
       .then(data => {
         res.send({ message: "NJ Parser", data })
       })

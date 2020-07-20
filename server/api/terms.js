@@ -9,7 +9,7 @@ router.get('/', (req, res, next) => {
 
 router.post('/', (req, res, next) => {
   const { string, flags, markup } = req.body;
-  
+
   Terms.create({ string, flags, markup })
   .then(term => res.send(term))
   .catch(next);

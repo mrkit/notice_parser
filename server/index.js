@@ -24,4 +24,5 @@ server.use((err, req, res, next) => {
 });
 
 db.conn.sync({force: true})
+.then(() => db.seed.njSeed())
 .then(() => server.listen(3000, console.log('listening on 3000')));
