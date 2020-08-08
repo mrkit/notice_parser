@@ -1,6 +1,6 @@
 import axios from 'axios';
 import './stylesheets/main.scss';
-import createTermsForm from './components/termsForm';
+import createTermsForm from './components/termsFormComponent';
 
 const pdfInput = document.getElementById("pdfInput");
 const statusMessage = document.getElementById('message');
@@ -45,7 +45,7 @@ function handleParserForm(e){
     if(statusMessage.childNodes.length){
       statusMessage.removeChild(statusMessage.childNodes[0]);
     }
-
+    
     const message = document.createTextNode(pdf.message);
     
     statusMessage.appendChild(message);
@@ -76,11 +76,25 @@ function handleTermsForm (e){
   e.preventDefault();
   const string = e.target.term.value;
   const flags = stringifyFlags();
-  const markup = e.target.markup.value;
+  let markup = e.target.markup.value;
 
-  if(!markup){
-    console.log('Made it in the markup')
-  }
+  const bold = e.target.bold.checked;
+  const underline = e.target.underline.checked;
+  const highlight = e.target.highlight.checked;
+  const color = highlight ? e.target.colorPicker.value : null; //make dependent on highlight being true
+
+  if(markup == ''){
+    const span = document.createElement('span');
+    span.textContent = '$&';
+    span.style.fontWeight = bold ?  'bold' : 'normal';
+    span.style.textDecoration = underline ? 'underline' : 'none';
+    span.style.backgroundColor = highlight ? color : 'initial';
+    let temp = JSON.parse(JSON.stringify(span, ["textContent", "style", "backgroundColor", "fontWeight", "textDecoration"]));
+    
+    markup = String.raw`<span style="background-color:${temp.style.backgroundColor};font-weight:${temp.style.fontWeight};text-decoration:${temp.style.textDecoration}">${temp.textContent}</span>`;
+  } 
+
+  console.log("Waht is markup", markup);
 
   axios.post('/api/terms', { string, flags, markup })
   .then(res => res.data)
@@ -118,8 +132,8 @@ function handleAddTerm(term){
   // li.innerHTML = `<span class="t-string">${term.string.substring(0,30)}...</span><span class="t-flags">${term.flags}</span><span class="t-markup"></span>`;
 
   const tStringSpan = document.createElement('span');
-  tStringSpan.className = 't-string'
-  tStringSpan.textContent = term.string.substring(0,30);
+  tStringSpan.className = 't-string';
+  tStringSpan.textContent = term.string.substring(0, 50);
 
   const tFlagsSpan = document.createElement('span');
   tFlagsSpan.className = 't-flags'
@@ -127,7 +141,7 @@ function handleAddTerm(term){
 
   const tMarkupSpan = document.createElement('span');
   tMarkupSpan.className = 't-markup'
-  tMarkupSpan.textContent = term.markup;
+  tMarkupSpan.textContent = term.markup.substring(0, 60);
 
   li.append(tStringSpan, tFlagsSpan, tMarkupSpan);
   
@@ -170,14 +184,60 @@ function handleAddTerm(term){
 function handleUpdateTerm(e){
   e.preventDefault();
   const term = JSON.parse(e.target.updateTerm.value);
+
+  console.log("Term =", term);
+  axios.put(`/api/terms/${term.id}`, term)
+  .then(res => res.data)
+  .then(term => console.log('Term right?', term))
+  .catch(err => console.log(`Axios Put Error = ${err.message}`));
+}
+
+const modal = document.getElementById('modal');
+
+window.onclick = function(e){
+  if(e.target == modal){
+    modal.style.display = 'none';
+  }
 }
 
 function handleDeleteTerm(e){
   e.preventDefault();
-  const term = JSON.parse(e.target.delteTerm.value);
-  //termsForm refill
+  const term = JSON.parse(e.target.deleteTerm.value); // Change this to just be the ID?
+  
+  //Reveal Modal - modalForm handles the actual delete
+  modal.style.display = 'grid';
 
+  const modalString = document.getElementById('modalString');
+  const modalMarkup = document.getElementById('modalMarkup');
+
+  modalString.textContent = term.string + '/' + term.flags;
+  modalMarkup.textContent = term.markup;
+
+  window.deletedTerm = term;
 }
 
+//Add string and markup to modal
+const modalForm = document.getElementById('modalForm');
 
+modalForm.addEventListener('submit', e => {
+  e.preventDefault();
+  const deleteTerm = e.target.delete.value;
+  const term = window.deletedTerm;
+  console.log('What is window.deletedTerm', term);
+  if(deleteTerm == 'yes'){
+    console.log("made it in delete term")
+    axios.delete(`/api/terms/${term.id}`)
+    .then(res => res.data)
+    .then(termId => {
+      //filter terms in preferences
+      console.log('Terms list', termId );
+      termsList.children = []
+    })
+    .catch(err => console.log(`Axios Delete Error = ${err.message}`));
+    modal.style.display = 'none';
+  } else {
+    modal.style.display = 'none';
+  }
 
+  window.deletedTerm = null; //should i be using the window object to shuttle around the term like this?
+})

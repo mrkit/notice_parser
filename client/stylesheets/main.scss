@@ -11,6 +11,17 @@ body {
   font-weight: 100;
 }
 
+//  /* Hide scrollbar for Chrome, Safari and Opera */
+//  body::-webkit-scrollbar {
+//   display: none;
+// }
+
+// /* Hide scrollbar for IE, Edge and Firefox */
+// body {
+//   -ms-overflow-style: none;  /* IE and Edge */
+//   scrollbar-width: none;  /* Firefox */
+// } 
+
 header {
   user-select: none;
   padding-bottom: 1rem;;
@@ -161,9 +172,41 @@ aside {
       }
 
       .t-markup {
+        max-height: 1rem;
       }
     }
 
     
+  }
+}
+
+.modal {
+  display: none;
+  position: fixed;
+  top: 0;
+  left: 0;
+  height: 100%;
+  width: 100%;
+  z-index: 1;
+  background: rgb(0,0,0);
+  background: rgba(0,0,0,0.4);
+  justify-content: center;
+  align-items: center;
+
+  .modal-content {
+    padding: 1rem;
+    background: thistle;
+    border: 1px solid black;
+    width: 28rem;
+    height: 15rem;
+    box-shadow: 2px 1px 10px 1px rgba(0, 0, 0, 0.5);
+    display: grid;
+    grid-template-rows: repeat(auto-fill, 1fr);
+
+    .modal-content-choice {
+      display: flex;
+      justify-content: space-evenly;
+      // button {}
+    }
   }
 }

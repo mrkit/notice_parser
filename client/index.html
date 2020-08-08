@@ -18,7 +18,7 @@
       </form>
     </div>
     <div class="right">
-      <!-- termsForm will be prepended here. Decide if it should go in preferences -->
+      <!-- termsFormComponent will be prepended here. Decide if it should go in preferences -->
       <div class="status-message-display">Parser Type: <div id="message" class="message"></div></div>
       <nav>
         <ul>
@@ -36,5 +36,18 @@
   </aside>
 
   <div id="preview"></div>
+
+  <div id="modal" class="modal">
+    <div class="modal-content">
+      <h2>Are you sure you want to delete term?</h2>
+      <p>String: <span id="modalString"></span></p>
+      <p>Markup: <span id="modalMarkup"></span></p>
+      <form id="modalForm" class="modal-form">
+        <label>Yes<input type="radio" name="delete" value="yes"></label>
+        <label>No<input type="radio" name="delete" value="no" checked></label>
+        <input type="submit" value="Submit">
+      </form>
+    </div>
+  </div>
 </body>
 </html>

@@ -15,4 +15,24 @@ router.post('/', (req, res, next) => {
   .catch(next);
 });
 
+router.put('/:id', (req, res, next) => {
+  const { string, flags, markup } = req.body.term;
+  const id = req.params.id;
+
+  Terms.update({ string, flags, markup }, { where: { id }})
+  .then((updatedTerm) => {
+    console.log("Updated term right?", updatedTerm);
+    res.send(updatedTerm);
+  })
+  .catch(next);
+});
+
+router.delete('/:id', (req, res, next) => {
+  const id = req.params.id;
+
+  Terms.destroy({ where: { id }})
+  .then(thing => res.send(id))
+  .catch(next);
+});
+
 module.exports = router;

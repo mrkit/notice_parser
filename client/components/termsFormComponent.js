@@ -67,6 +67,7 @@ function createTermsForm(submitType){
 
   const boldCheckbox = document.createElement('input');
   boldCheckbox.setAttribute('type', 'checkbox');
+  boldCheckbox.setAttribute('name', 'bold');
 
   boldLabel.appendChild(boldCheckbox);
 
@@ -76,10 +77,13 @@ function createTermsForm(submitType){
 
   const underlineCheckbox = document.createElement('input');
   underlineCheckbox.setAttribute('type', 'checkbox');
+  underlineCheckbox.setAttribute('name', 'underline');
+
 
   underlineLabel.appendChild(underlineCheckbox);
 
   const toggleMarkupBtn = document.createElement('button');
+  toggleMarkupBtn.setAttribute('type', 'button'); //this prevents it from submitting the form!
   toggleMarkupBtn.textContent = '∞';
   toggleMarkupBtn.addEventListener('click', function(e){
     if(addMarkupLabel.style.display == 'none'){
