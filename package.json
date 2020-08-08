@@ -4,6 +4,7 @@
   "description": "",
   "main": "index.js",
   "scripts": {
+    "start": "webpack --mode production & NODE_ENV=production pm2 start --name notice_parser server >> ~/logs/pm2/notice_parser.log",
     "dev": "webpack -w --mode development & NODE_ENV=development nodemon --watch server --exec node server"
   },
   "keywords": [],
