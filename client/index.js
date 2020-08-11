@@ -6,6 +6,7 @@ const pdfInput = document.getElementById("pdfInput");
 const statusMessage = document.getElementById('message');
 const preview = document.getElementById('preview');
 const termsList = document.getElementById('termsList');
+const parserForm = document.getElementById('parserForm');
 
 const preferencesBtn = document.getElementById('preferencesBtn');
 const preferences = document.getElementById('preferences');
@@ -34,12 +35,16 @@ function handleBrowseFiles(e){
 function handleParserForm(e){
   e.preventDefault();
 
-  const pdfFileName = pdfInput.files[0].name;
-  const writeText = e.target.writeText.checked;
-  const writeHTML = e.target.writeHTML.checked;
-  const openGDrive = e.target.openGDrive.checked;
+  // const pdfFileName = pdfInput.files[0].name;
+  // const writeText = e.target.writeText.checked;
+  // const writeHTML = e.target.writeHTML.checked;
+  const openGDrive = e.target.openGDrive.checked; 
 
-  axios.post('/api/parser', { pdfFileName, writeText, writeHTML })
+  // const pdfFile = document.querySelector('[type="file"]').files[0]; //used only if I'm sending individual input
+
+  const formData = new FormData(parserForm);
+
+  axios.post('/api/parser', formData)
   .then(res => res.data)
   .then(pdf => {
     if(statusMessage.childNodes.length){
