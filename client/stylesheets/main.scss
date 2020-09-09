@@ -210,3 +210,34 @@ aside {
     }
   }
 }
+
+.modal-update {
+  display: none;
+  position: fixed;
+  top: 0;
+  left: 0;
+  height: 100%;
+  width: 100%;
+  z-index: 1;
+  background: rgb(0,0,0);
+  background: rgba(0,0,0,0.4);
+  justify-content: center;
+  align-items: center;
+
+  .modal-update-content {
+    padding: 1rem;
+    background: thistle;
+    border: 1px solid black;
+    width: 25rem;
+    height: 10rem;
+    box-shadow: 2px 1px 10px 1px rgba(0, 0, 0, 0.5);
+    display: grid;
+    grid-template-rows: repeat(auto-fill, 1fr);
+    justify-content: center;
+    align-items: center;
+    form {
+      display: grid;
+      gap: 1rem;
+    }
+  }
+}

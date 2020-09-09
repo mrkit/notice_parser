@@ -12,7 +12,13 @@ const preferencesBtn = document.getElementById('preferencesBtn');
 const preferences = document.getElementById('preferences');
 
 window.onload = init;
-const termsForm = createTermsForm('Submit');
+const termsForm = createTermsForm('Submit'); 
+document.querySelector('.right').prepend(termsForm); //prepend to .right element
+//Add terms update form to the modalUpdate (consolidate modal and modalUpdate eventually);
+const modalUpdate = document.getElementById('modalUpdate');
+const termsFormUpdate = document.getElementById('termsFormUpdate');
+termsFormUpdate.appendChild(createTermsForm('Update', 'termsUpdateForm'));
+
 pdfInput.addEventListener('change', handleBrowseFiles);
 parserForm.addEventListener('submit', handleParserForm);
 termsForm.addEventListener('submit', handleTermsForm);
@@ -134,8 +140,7 @@ function handleAddTerm(term){
   const li = document.createElement('li');
   li.className = 'termsList-term';
 
-  // li.innerHTML = `<span class="t-string">${term.string.substring(0,30)}...</span><span class="t-flags">${term.flags}</span><span class="t-markup"></span>`;
-
+  /* Elements to Bind to li */
   const tStringSpan = document.createElement('span');
   tStringSpan.className = 't-string';
   tStringSpan.textContent = term.string.substring(0, 50);
@@ -150,18 +155,23 @@ function handleAddTerm(term){
 
   li.append(tStringSpan, tFlagsSpan, tMarkupSpan);
   
-  const updateForm = document.createElement('form');
+  /* Create updateForm* and deleteForm elements */
+  const updateForm = document.createElement('button')
+  updateForm.textContent = "Update";
   const deleteForm = document.createElement('form');
 
   /* --- Update Inputs --- */
-  const updateInput = document.createElement('input');
-  updateInput.setAttribute('type', 'submit');
-  updateInput.setAttribute('value', 'Edit');
+  // const termsUpdateForm = createTermsForm('Update', term);
+  // termsFormUpdate.addEventListener('submit', handleSubmitUpdateForm)
+
+  // const updateInput = document.createElement('input');
+  // updateInput.setAttribute('type', 'submit');
+  // updateInput.setAttribute('value', 'Edit');
   
-  const updateInputData = document.createElement('input');
-  updateInputData.setAttribute('type', 'hidden');
-  updateInputData.setAttribute('name', 'updateTerm');
-  updateInputData.setAttribute('value', JSON.stringify(term));
+  // const updateInputData = document.createElement('input');
+  // updateInputData.setAttribute('type', 'hidden');
+  // updateInputData.setAttribute('name', 'updateTerm');
+  // updateInputData.setAttribute('value', JSON.stringify(term));
 
   /* --- Delete Inputs --- */
   const deleteInput = document.createElement('input');
@@ -173,10 +183,60 @@ function handleAddTerm(term){
   deleteInputData.setAttribute('name', 'deleteTerm');
   deleteInputData.setAttribute('value', JSON.stringify(term));
 
-  updateForm.append(updateInput, updateInputData);
+  // updateForm.append(updateInput, updateInputData);
   deleteForm.append(deleteInput, deleteInputData);
 
-  updateForm.addEventListener('submit', handleUpdateTerm);
+  updateForm.addEventListener('click', function(e){
+    /* Function's purpose: Reveal the modal, create the form, append it to the modal */
+    modalUpdate.style.display = "grid";
+
+    const termsUpdateForm = document.getElementById('termsUpdateForm');
+    //Attach term to hidden input so you have access in the handleUpdateTerm function
+    const updateInputData = document.createElement('input');
+    updateInputData.setAttribute('type', 'hidden');
+    updateInputData.setAttribute('name', 'updateTerm');
+    updateInputData.value = term.id; //pass the ID - fix this naming
+    termsUpdateForm.appendChild(updateInputData);
+
+    console.log('termsUpdateForm ===', term.id);
+
+    //This is the first input, fill it with the current term string
+    termsUpdateForm[0].value = term.string;
+    //If there is no current term string, update the placeholder
+    if(!term.string){
+      termsUpdateForm[0].placeholder = "Update term";
+    }
+
+    // Uncheck all flags in the update modal. This makes selecting them from the current work
+    Object.keys(termsUpdateForm).forEach(x => {
+      if(termsUpdateForm[x].name == "flags"){
+        termsUpdateForm[x].checked = false;
+      }
+    });
+
+    // Reselect all the flags from the original term
+    Object.keys(termsUpdateForm).forEach(x => {
+      if(termsUpdateForm[x].name == "flags"){
+        if(term.flags.match(/g/i) && termsUpdateForm[x].value == 'g'){
+          termsUpdateForm[x].checked = true;
+        } 
+
+        if(term.flags.match(/i/i) && termsUpdateForm[x].value == 'i'){
+          termsUpdateForm[x].checked = true;
+        } 
+
+        if(term.flags.match(/m/i) && termsUpdateForm[x].value == 'm'){
+          termsUpdateForm[x].checked = true;
+        } 
+      }
+    });
+
+    // Update bold, underline, highlight, colorpicker, and the markup
+
+    
+    termsUpdateForm.addEventListener('submit', handleUpdateTerm);
+  });
+
   deleteForm.addEventListener('submit', handleDeleteTerm);
 
   li.appendChild(updateForm);
@@ -186,15 +246,41 @@ function handleAddTerm(term){
   termsList.appendChild(li);
 }
 
+// merge this with handleTerm eventually
 function handleUpdateTerm(e){
   e.preventDefault();
-  const term = JSON.parse(e.target.updateTerm.value);
+  const string = e.target.term.value;
+  const flags = stringifyFlags();
+  let markup = e.target.markup.value;
+  const termId = e.target.updateTerm.value;
+  console.log("TermID =", termId);
+  
+  const bold = e.target.bold.checked;
+  const underline = e.target.underline.checked;
+  const highlight = e.target.highlight.checked;
+  const color = highlight ? e.target.colorPicker.value : null; //make dependent on highlight being true
 
-  console.log("Term =", term);
-  axios.put(`/api/terms/${term.id}`, term)
+  if(markup == ''){
+    const span = document.createElement('span');
+    span.textContent = '$&';
+    span.style.fontWeight = bold ?  'bold' : 'normal';
+    span.style.textDecoration = underline ? 'underline' : 'none';
+    span.style.backgroundColor = highlight ? color : 'initial';
+    let temp = JSON.parse(JSON.stringify(span, ["textContent", "style", "backgroundColor", "fontWeight", "textDecoration"]));
+    
+    markup = String.raw`<span style="background-color:${temp.style.backgroundColor};font-weight:${temp.style.fontWeight};text-decoration:${temp.style.textDecoration}">${temp.textContent}</span>`;
+  } 
+
+   axios.put(`/api/terms/${termId}`, { string, flags, markup })
   .then(res => res.data)
-  .then(term => console.log('Term right?', term))
+  .then(term => {
+    console.log('Updated term right?', term);
+    // 
+  })
   .catch(err => console.log(`Axios Put Error = ${err.message}`));
+
+  e.target.term.value = '';
+  e.target.markup.value = '';
 }
 
 const modal = document.getElementById('modal');
@@ -202,6 +288,9 @@ const modal = document.getElementById('modal');
 window.onclick = function(e){
   if(e.target == modal){
     modal.style.display = 'none';
+  }
+  if(e.target == modalUpdate){
+    modalUpdate.style.display = 'none';
   }
 }
 

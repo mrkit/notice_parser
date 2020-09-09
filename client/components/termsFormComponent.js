@@ -1,6 +1,7 @@
-function createTermsForm(submitType){
+function createTermsForm(submitBtnTextContent, termsUpdateFormId){
   const termsForm = document.createElement('form');
   termsForm.className = 'termsForm';
+  if(termsUpdateFormId) termsForm.id = termsUpdateFormId;
 
   /* --- Div for Inputs and Checkboxes --- */
   const termInputDiv = document.createElement('div');
@@ -16,26 +17,32 @@ function createTermsForm(submitType){
   // termInput.setAttribute('tabindex', '1');
   termInput.setAttribute('placeholder', 'Add new term');
   termInput.setAttribute('autocomplete', 'off');
+  // term && termInput.setAttribute('value', term.string);
 
   addTermLabel.appendChild(termInput);
-
   const flagCheckboxG = document.createElement('input');
   flagCheckboxG.setAttribute('type', 'checkbox');
   flagCheckboxG.setAttribute('name', 'flags');
   // flagCheckboxG.setAttribute('tabindex', '3');
   flagCheckboxG.setAttribute('value', 'g');
+  flagCheckboxG.setAttribute('checked', '');
+  // term && (flagCheckboxG.checked = term.flags.match(/g/) ? true : false);
 
   const flagCheckboxI = document.createElement('input');
   flagCheckboxI.setAttribute('type', 'checkbox');
   flagCheckboxI.setAttribute('name', 'flags');
   // flagCheckboxI.setAttribute('tabindex', '4');
   flagCheckboxI.setAttribute('value', 'i');
+  flagCheckboxI.setAttribute('checked', '');
+  // term && (flagCheckboxI.checked = term.flags.match(/i/) ? true : false);
 
   const flagCheckboxM = document.createElement('input');
   flagCheckboxM.setAttribute('type', 'checkbox');
   flagCheckboxM.setAttribute('name', 'flags');
   // flagCheckboxM.setAttribute('tabindex', '5');
   flagCheckboxM.setAttribute('value', 'm');
+  // term && (flagCheckboxM.checked = term.flags.match(/m/) ? true : false);
+
 
   termInputDiv.append(addTermLabel, '/', flagCheckboxG, 'g', flagCheckboxI, 'i', flagCheckboxM, 'm');
 
@@ -60,6 +67,7 @@ function createTermsForm(submitType){
   colorPicker.setAttribute('type', 'color');
   colorPicker.setAttribute('name', 'colorPicker');
   colorPicker.setAttribute('value', '#FFC0CB');
+  colorPicker.addEventListener('click', () => highlightCheckbox.checked = true);
 
   //Bold
   const boldLabel = document.createElement('label');
@@ -79,7 +87,6 @@ function createTermsForm(submitType){
   underlineCheckbox.setAttribute('type', 'checkbox');
   underlineCheckbox.setAttribute('name', 'underline');
 
-
   underlineLabel.appendChild(underlineCheckbox);
 
   const toggleMarkupBtn = document.createElement('button');
@@ -93,7 +100,6 @@ function createTermsForm(submitType){
     }
   })
 
-  
   /* --- Advanced Toggle: --- */
   const addMarkupLabel = document.createElement('label');
   addMarkupLabel.setAttribute('htmlFor', 'markupInput')
@@ -113,11 +119,10 @@ function createTermsForm(submitType){
   
   const submitForm = document.createElement('input');
   submitForm.setAttribute('type', 'submit');
-  submitForm.setAttribute('value', submitType);
+  submitForm.setAttribute('value', submitBtnTextContent);
   
   quickSelectDiv.append(boldLabel, underlineLabel, highlightLabel, colorPicker, toggleMarkupBtn);
   termsForm.append(termInputDiv, quickSelectDiv, addMarkupLabel, submitForm);
-  document.querySelector('.right').prepend(termsForm);
   
   return termsForm; //not necessary?
 }
