@@ -155,23 +155,21 @@ function handleAddTerm(term){
 
   li.append(tStringSpan, tFlagsSpan, tMarkupSpan);
   
-  /* Create updateForm* and deleteForm elements */
-  const updateForm = document.createElement('button')
-  updateForm.textContent = "Update";
+  /* Create updateTermBtn and deleteForm elements */
+  const updateTermBtn = document.createElement('form');
   const deleteForm = document.createElement('form');
 
-  /* --- Update Inputs --- */
-  // const termsUpdateForm = createTermsForm('Update', term);
-  // termsFormUpdate.addEventListener('submit', handleSubmitUpdateForm)
-
-  // const updateInput = document.createElement('input');
-  // updateInput.setAttribute('type', 'submit');
-  // updateInput.setAttribute('value', 'Edit');
+  /* ADD THIS INVISIBLE INPUT TO THE FORM to be pulled off later from the e.target.updateTerm.value */
+  const updateInput = document.createElement('input');
+  updateInput.setAttribute('type', 'submit');
+  updateInput.setAttribute('value', 'Edit');
   
-  // const updateInputData = document.createElement('input');
-  // updateInputData.setAttribute('type', 'hidden');
-  // updateInputData.setAttribute('name', 'updateTerm');
-  // updateInputData.setAttribute('value', JSON.stringify(term));
+  const updateInputData = document.createElement('input');
+  updateInputData.setAttribute('type', 'hidden');
+  updateInputData.setAttribute('name', 'termToBeUpdatedId'); //change this to termToBeUpdatedId?
+  // updateInputData.setAttribute('value', JSON.stringify(term)); //This doesn't need the whole object, just the id
+  updateInputData.setAttribute('value', term.id);
+  
 
   /* --- Delete Inputs --- */
   const deleteInput = document.createElement('input');
@@ -183,22 +181,31 @@ function handleAddTerm(term){
   deleteInputData.setAttribute('name', 'deleteTerm');
   deleteInputData.setAttribute('value', JSON.stringify(term));
 
-  // updateForm.append(updateInput, updateInputData);
+  updateTermBtn.append(updateInput, updateInputData);
   deleteForm.append(deleteInput, deleteInputData);
 
-  updateForm.addEventListener('click', function(e){
-    /* Function's purpose: Reveal the modal, create the form, append it to the modal */
+
+
+  updateTermBtn.addEventListener('submit', function(e){
+    e.preventDefault();
+
+    console.log('I should be ablet o get this term id finally', e.target.termToBeUpdatedId.value)
+    /* 
+      Function's purpose: 
+      1) Reveal the modal, 
+      2) create the form, 
+      3) append it to the modal 
+    */
+    
+    // Reveal the modal
     modalUpdate.style.display = "grid";
-
+    console.log("What's on the event object", e.target);
+  
     const termsUpdateForm = document.getElementById('termsUpdateForm');
-    //Attach term to hidden input so you have access in the handleUpdateTerm function
-    const updateInputData = document.createElement('input');
-    updateInputData.setAttribute('type', 'hidden');
-    updateInputData.setAttribute('name', 'updateTerm');
-    updateInputData.value = term.id; //pass the ID - fix this naming
-    termsUpdateForm.appendChild(updateInputData);
+  
+    
+    // termsUpdateForm.appendChild(updateInputData);
 
-    console.log('termsUpdateForm ===', term.id);
 
     //This is the first input, fill it with the current term string
     termsUpdateForm[0].value = term.string;
@@ -239,7 +246,7 @@ function handleAddTerm(term){
 
   deleteForm.addEventListener('submit', handleDeleteTerm);
 
-  li.appendChild(updateForm);
+  li.appendChild(updateTermBtn);
   li.appendChild(deleteForm);
 
   //Attach to preferences unordered list
@@ -269,7 +276,7 @@ function handleUpdateTerm(e){
     let temp = JSON.parse(JSON.stringify(span, ["textContent", "style", "backgroundColor", "fontWeight", "textDecoration"]));
     
     markup = String.raw`<span style="background-color:${temp.style.backgroundColor};font-weight:${temp.style.fontWeight};text-decoration:${temp.style.textDecoration}">${temp.textContent}</span>`;
-  } 
+  }
 
    axios.put(`/api/terms/${termId}`, { string, flags, markup })
   .then(res => res.data)
@@ -335,3 +342,21 @@ modalForm.addEventListener('submit', e => {
 
   window.deletedTerm = null; //should i be using the window object to shuttle around the term like this?
 })
+
+
+ //Attach term to hidden input so you have access in the handleUpdateTerm function THIS PART HAS TO BE DONE IN THE HANDLEADDTERM FUNCTION!!!! OTHERWISE IT'S ONLY BEING ADDED ONCE
+    //THE DISPLAY OF THIS DATA HAPPENS DYNAMICALLY, BUT THIS INFO NEEDS TO BE INJECTED INTO EVERY TERM ADDED
+
+
+  /* --- Update Inputs --- */
+  // const termsUpdateForm = createTermsForm('Update', term);
+  // termsFormUpdate.addEventListener('submit', handleSubmitUpdateForm)
+
+  // const updateInput = document.createElement('input');
+  // updateInput.setAttribute('type', 'submit');
+  // updateInput.setAttribute('value', 'Edit');
+  
+  // const updateInputData = document.createElement('input');
+  // updateInputData.setAttribute('type', 'hidden');
+  // updateInputData.setAttribute('name', 'updateTerm');
+  // updateInputData.setAttribute('value', JSON.stringify(term));
